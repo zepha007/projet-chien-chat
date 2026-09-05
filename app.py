@@ -10,18 +10,17 @@ st.set_page_config(page_title="Chien ou Chat ?", page_icon="", layout="centered"
 st.title("Classificateur de Chiens et Chats ")
 st.write("Importe une photo ci-dessous pour découvrir si notre intelligence artificielle y voit un chien ou un chat !")
 
-# Lien direct vers ton fichier .h5 hébergé (sans espace)
+# Lien direct vers ton modèle en niveaux de gris sur Hugging Face
 MODEL_URL = "https://huggingface.co/zepha007/chien-chat-classifer/resolve/main/cats_vs_dogs_efficientnet_gray%20(1).h5"
 MODEL_PATH = "modele_chiens_chats.h5"
 
 @st.cache_resource
 def load_my_model():
-    # Télécharger le modèle s'il n'est pas déjà présent sur le serveur Streamlit
     if not os.path.exists(MODEL_PATH):
         with st.spinner("Téléchargement du modèle d'IA en cours (veuillez patienter)..."):
             urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
     
-    model = tf.keras.models.load_model(MODEL_PATH)
+    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
     return model
 
 # Chargement du modèle
@@ -39,18 +38,24 @@ if uploaded_file is not None and model is not None:
     
     if st.button('Lancer la prédiction'):
         with st.spinner("Analyse de l'image..."):
-            # Conversion en niveaux de gris ("L") et redimensionnement à 150x150
-            image = image.convert("L").resize((150, 150))
-            img_array = np.array(image) / 255.0
+            # Traitement strictement identique à ton script local (Niveaux de gris 'L')
+            img = image.convert('L').resize((150, 150))
+            tab_img = np.array(img) / 255.0
+            donnees_finales = tab_img.reshape(1, 150, 150, 1)
             
-            # Ajout de la dimension du canal (1) et du batch (1) -> (1, 150, 150, 1)
-            img_array = np.expand_dims(img_array, axis=-1)
-            img_array = np.expand_dims(img_array, axis=0)
+            prediction = model.predict(donnees_finales, verbose=0)
             
-            prediction = model.predict(img_array)
-            score = prediction[0][0]
-            
-            if score > 0.5:
-                st.success(f"C'est un Chat !  (Confiance : {score*100:.2f}%)")
+            # Logique exacte de ton script local pour chien/chat et score
+            if prediction.shape[1] == 1:
+                score_final = float(prediction[0][0])
+                if score_final > 0.5:
+                    animal, certitude = "Chien", score_final
+                else:
+                    animal, certitude = "Chat", 1 - score_final
             else:
-                st.success(f"C'est un Chien !  (Confiance : {(1-score)*100:.2f}%)")
+                choix = np.argmax(prediction[0])
+                noms_classes = ["Chat", "Chien"]
+                animal = noms_classes[choix]
+                certitude = float(prediction[0][choix])
+            
+            st.success(f"C'est un {animal} !  (Confiance : {certitude*100:.2f}%)")
