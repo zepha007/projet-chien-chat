@@ -8,35 +8,76 @@ from datetime import datetime
 
 st.set_page_config(page_title="Classification Chiens et Chats", layout="wide")
 
+# Design CSS professionnel : Thème sombre moderne, cartes avec ombres douces et typographie soignée
 st.markdown("""
     <style>
+    .stApp {
+        background-color: #0b0f19;
+        color: #f3f4f6;
+    }
+    header, footer {visibility: hidden;}
+    
     .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
+        padding: 2.5rem 2rem;
+        max-width: 1280px;
     }
+    
+    /* Style global des conteneurs (effet cartes) */
+    div[data-testid="stVerticalBlock"] > div[style*="border"] {
+        background-color: #111827 !important;
+        border: 1px solid #1f2937 !important;
+        border-radius: 12px !important;
+        padding: 1.5rem !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    }
+
     h1 {
-        color: #1f2937;
-        font-weight: 700;
-        font-size: 1.8rem;
+        color: #f9fafb;
+        font-weight: 800;
+        font-size: 2rem;
+        letter-spacing: -0.025em;
     }
+    
+    h3 {
+        color: #e5e7eb;
+        font-weight: 600;
+        font-size: 1.25rem;
+        border-bottom: 2px solid #1f2937;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Boutons stylisés */
     .stButton > button {
         width: 100%;
-        background-color: #2563eb;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         color: white;
-        border-radius: 6px;
-        font-weight: 500;
-        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.6rem 1rem;
         border: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(29, 78, 216, 0.3);
     }
+    
     .stButton > button:hover {
-        background-color: #1d4ed8;
-        color: white;
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 8px -1px rgba(29, 78, 216, 0.4);
+    }
+
+    /* Zone de texte et alertes intégrées */
+    .stAlert {
+        background-color: #1f2937 !important;
+        border: 1px solid #374151 !important;
+        color: #f3f4f6 !important;
+        border-radius: 8px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("Classification de Chiens et Chats")
-st.write("Interface de traitement et d'analyse d'images.")
+st.write("Interface de traitement et d'analyse d'images par réseau de neurones.")
 st.write("")
 
 MODEL_URL = "https://huggingface.co/zepha007/chien-chat-classifer/resolve/main/cats_vs_dogs_efficientnet_gray%20(1).h5"
