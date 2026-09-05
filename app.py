@@ -6,78 +6,95 @@ import os
 import urllib.request
 from datetime import datetime
 
-st.set_page_config(page_title="Classification Chiens et Chats", layout="wide")
+st.set_page_config(page_title="Neural Vision Engine", page_icon=None, layout="wide")
 
-# Design CSS professionnel : Thème sombre moderne, cartes avec ombres douces et typographie soignée
 st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
     .stApp {
-        background-color: #0b0f19;
+        background-color: #030712;
         color: #f3f4f6;
+        font-family: 'Inter', sans-serif;
     }
     header, footer {visibility: hidden;}
     
     .block-container {
-        padding: 2.5rem 2rem;
-        max-width: 1280px;
+        padding: 3rem 2rem;
+        max-width: 1400px;
     }
-    
-    /* Style global des conteneurs (effet cartes) */
+
     div[data-testid="stVerticalBlock"] > div[style*="border"] {
-        background-color: #111827 !important;
-        border: 1px solid #1f2937 !important;
-        border-radius: 12px !important;
-        padding: 1.5rem !important;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(145deg, rgba(17, 24, 39, 0.7) 0%, rgba(3, 7, 18, 0.7) 100%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 16px !important;
+        padding: 2rem !important;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(12px);
     }
 
     h1 {
-        color: #f9fafb;
+        color: #ffffff;
         font-weight: 800;
-        font-size: 2rem;
-        letter-spacing: -0.025em;
+        font-size: 2.5rem;
+        letter-spacing: -0.03em;
+        background: linear-gradient(to right, #ffffff, #9ca3af);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
     
     h3 {
-        color: #e5e7eb;
+        color: #f9fafb;
         font-weight: 600;
-        font-size: 1.25rem;
-        border-bottom: 2px solid #1f2937;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1rem;
+        font-size: 1.15rem;
+        letter-spacing: -0.01em;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.25rem;
     }
 
-    /* Boutons stylisés */
     .stButton > button {
         width: 100%;
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
         color: white;
-        border-radius: 8px;
+        border-radius: 10px;
         font-weight: 600;
-        padding: 0.6rem 1rem;
-        border: none;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 6px -1px rgba(29, 78, 216, 0.3);
+        padding: 0.7rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
     }
     
     .stButton > button:hover {
-        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-        transform: translateY(-1px);
-        box-shadow: 0 6px 8px -1px rgba(29, 78, 216, 0.4);
+        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* Zone de texte et alertes intégrées */
+    div[data-testid="stFileUploader"] {
+        background-color: rgba(17, 24, 39, 0.5);
+        border: 2px dashed rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.2s ease;
+    }
+    div[data-testid="stFileUploader"]:hover {
+        border-color: #6366f1;
+    }
+
     .stAlert {
-        background-color: #1f2937 !important;
-        border: 1px solid #374151 !important;
+        background-color: rgba(17, 24, 39, 0.8) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
         color: #f3f4f6 !important;
-        border-radius: 8px;
+        border-radius: 10px;
+        backdrop-filter: blur(8px);
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Classification de Chiens et Chats")
-st.write("Interface de traitement et d'analyse d'images par réseau de neurones.")
+st.title("Neural Vision Engine")
+st.write("Plateforme d'analyse prédictive et de classification d'images par réseau de neurones profond.")
 st.write("")
 
 MODEL_URL = "https://huggingface.co/zepha007/chien-chat-classifer/resolve/main/cats_vs_dogs_efficientnet_gray%20(1).h5"
@@ -86,40 +103,39 @@ MODEL_PATH = "modele_chiens_chats.h5"
 @st.cache_resource
 def load_my_model():
     if not os.path.exists(MODEL_PATH):
-        with st.spinner("Chargement du modele en cours..."):
+        with st.spinner("Téléchargement des poids du modèle..."):
             urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
-    
     model = tf.keras.models.load_model(MODEL_PATH, compile=False)
     return model
 
 try:
     model = load_my_model()
 except Exception as e:
-    st.error(f"Erreur lors du chargement du modele : {e}")
+    st.error(f"Erreur critique lors du chargement du modèle : {e}")
     model = None
 
 if 'history' not in st.session_state:
     st.session_state.history = []
 
-col1, col2 = st.columns([1, 1], gap="large")
+col1, col2 = st.columns(2, gap="large")
 
 with col1:
     with st.container(border=True):
-        st.subheader("Selection de l'image")
-        uploaded_file = st.file_uploader("Choisir un fichier image (jpg, jpeg, png)", type=["jpg", "jpeg", "png"])
+        st.subheader("Flux d'entrée (Source)")
+        uploaded_file = st.file_uploader("Glissez ou sélectionnez une image", type=["jpg", "jpeg", "png"])
         
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
-            st.image(image, caption='Aperçu', use_container_width=True)
+            st.image(image, caption='Aperçu de l\'échantillon', use_container_width=True)
         
-        predict_btn = st.button("Lancer l'analyse")
+        predict_btn = st.button("Lancer l'inférence neuronale")
 
 with col2:
     with st.container(border=True):
-        st.subheader("Resultats et historique")
+        st.subheader("Console de résultats et logs")
         
         if predict_btn and uploaded_file is not None and model is not None:
-            with st.spinner("Traitement en cours..."):
+            with st.spinner("Exécution du modèle en cours..."):
                 img = image.convert('L').resize((150, 150))
                 tab_img = np.array(img) / 255.0
                 donnees_finales = tab_img.reshape(1, 150, 150, 1)
@@ -149,19 +165,19 @@ with col2:
 
         if len(st.session_state.history) > 0:
             latest = st.session_state.history[0]
-            st.success(f"Resultat : {latest['animal']} (Indice de confiance : {latest['confiance']})")
+            st.success(f"Détection validée : **{latest['animal']}** (Précision : `{latest['confiance']}`)")
             
             st.write("")
-            st.text("Historique des sessions")
+            st.markdown("##### Historique des requêtes")
             
             for item in st.session_state.history:
-                st.write(f"- {item['animal']} | Confiance : {item['confiance']} | {item['date']}")
+                st.markdown(f"<span style='color: #9ca3af;'>[{item['date']}]</span> &nbsp; **{item['animal']}** &nbsp;|&nbsp; `Confiance: {item['confiance']}`", unsafe_allow_html=True)
             
             st.write("")
-            if st.button("Effacer l'historique"):
+            if st.button("Purger l'historique"):
                 st.session_state.history = []
                 st.rerun()
         else:
-            st.info("Veuillez importer une image pour afficher les resultats.")
-            if st.button("Effacer l'historique", disabled=True):
+            st.info("En attente d'un flux d'image pour initialiser l'analyse.")
+            if st.button("Purger l'historique", disabled=True):
                 pass
