@@ -11,7 +11,7 @@ st.title("Classificateur de Chiens et Chats ")
 st.write("Importe une photo ci-dessous pour découvrir si notre intelligence artificielle y voit un chien ou un chat !")
 
 # Lien direct vers ton fichier .h5 hébergé (sans espace)
-MODEL_URL = "https://huggingface.co/zepha007/chien-chat-classifer/resolve/main/modele_chiens_chats.h5"
+MODEL_URL = "https://huggingface.co/zepha007/chien-chat-classifer/resolve/main/cats_vs_dogs_efficientnet_gray%20(1).h5"
 MODEL_PATH = "modele_chiens_chats.h5"
 
 @st.cache_resource
