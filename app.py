@@ -39,14 +39,11 @@ if uploaded_file is not None and model is not None:
     
     if st.button('Lancer la prédiction'):
         with st.spinner("Analyse de l'image..."):
-            image = image.resize((150, 150))
+            # Conversion en RGB et redimensionnement à 150x150
+            image = image.convert("RGB").resize((150, 150))
             img_array = np.array(image) / 255.0
             
-            if len(img_array.shape) == 2:
-                img_array = np.stack((img_array,)*3, axis=-1)
-            elif img_array.shape[2] == 4:
-                img_array = img_array[:, :, :3]
-                
+            # Ajout de la dimension du batch (1, 150, 150, 3)
             img_array = np.expand_dims(img_array, axis=0)
             
             prediction = model.predict(img_array)
