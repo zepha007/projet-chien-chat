@@ -1,6 +1,6 @@
-# Classificateur de Chiens et Chats 
+ CLASSIFICATEUR DE CHIENS ET CHATS 
 Application web d'intelligence artificielle permettant de classifier des images de chiens et de chats grâce à un modèle EfficientNet en niveaux de gris.
 
-##  Tester l'application en ligne
+TESTER L'APPLICATION EN LIGNE 
 Tu peux tester l'application directement depuis ton téléphone ou ton ordinateur en cliquant sur le lien ci-dessous :
  [Accéder à l'application Streamlit](https://projet-chien-chat-vtsrapphukjk3kcglifncco.streamlit.app/)
